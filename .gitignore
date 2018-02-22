@@ -1,0 +1,9 @@
+dist/
+wheelhouse/
+build/
+.eggs/
+*.egg-info/
+*.pyc
+
+# if you happen to run it locally
+*.log
