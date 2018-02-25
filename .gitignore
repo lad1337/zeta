@@ -4,6 +4,7 @@ build/
 .eggs/
 *.egg-info/
 *.pyc
+.env*
 
 # if you happen to run it locally
 *.log

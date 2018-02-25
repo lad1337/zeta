@@ -34,8 +34,10 @@ def cancel(bot, update):
 
     return ConversationHandler.END
 
+
+command = 'refresh'
 conversation = ConversationHandler(
-    entry_points=[CommandHandler('refresh', start)],
+    entry_points=[CommandHandler(command, start)],
     states={
         State.WHAT: [MessageHandler(Filters.all, on_plex)]
     },
