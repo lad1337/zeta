@@ -10,6 +10,8 @@ DEFAULT = {
     'allowed': (lambda x: set(map(int, x.split(','))), ''),
     'plex_token': (str, _NOT_SET),
     'plex_baseurl': (str, _NOT_SET),
+    'radarr_apikey': (str, _NOT_SET),
+    'radarr_baseurl': (str, _NOT_SET),
     'template_dir': (str, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'messages'))
 }
 

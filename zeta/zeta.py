@@ -12,6 +12,7 @@ from telegram import ReplyKeyboardMarkup
 from zeta.config import settings
 from zeta.conversation import want
 from zeta.conversation import refresh
+from zeta.radarr import Client as RadarrClient
 
 
 logging.basicConfig(level=logging.DEBUG,
@@ -48,7 +49,9 @@ def main():
     # add central connections we need to the bot
 
     bot.plex = PlexServer(settings.plex_baseurl, settings.plex_token)
+    bot.radarr = RadarrClient(settings.radarr_baseurl, settings.radarr_apikey)
     bot.j2_env = Environment(loader=FileSystemLoader(settings.template_dir))
+
 
     # add all handlers
     dp = updater.dispatcher
