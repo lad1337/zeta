@@ -1,0 +1,17 @@
+Dockerfile
+*.swp
+*.pyc
+tags
+.ropeproject/
+.cache/
+.eggs/
+.tox/
+AUTHORS
+ChangeLog
+build/
+dist/
+*.egg-info
+htmlcov/
+.coverage
+test-results.xml
+venv
