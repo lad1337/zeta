@@ -1,5 +1,5 @@
 Found on {{ plex.friendlyName }}:
 
 {%- for video in results %}
-- *{{video.title}}* ({{video.year}})
+{{loop.index}}. *{{video.title}}* ({{video.year}})
 {%- endfor %}

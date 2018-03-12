@@ -2,7 +2,6 @@ from enum import Enum
 import logging
 
 from telegram import ReplyKeyboardMarkup
-from telegram import ReplyKeyboardRemove
 from telegram import ParseMode
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler
@@ -11,6 +10,8 @@ from telegram.ext import Filters
 from telegram.ext import ConversationHandler
 
 from zeta import constants
+from zeta.factory import Cancel
+from zeta.factory import UnknownTarget
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +70,7 @@ def search_radarr(bot, update, user_data):
     return State.CHOOSE_RADARR
 
 
-def target_choosen(bot, update, user_data):
+def target_chosen(bot, update, user_data):
     index = int(update.message.text)
     if index > RADARR_MAX_RESULTS:
         update.message.reply_text(
@@ -89,18 +90,6 @@ def target_choosen(bot, update, user_data):
     return ConversationHandler.END
 
 
-def unknown_target(bot, update):
-    user = update.message.from_user
-    update.message.reply_text(
-        f"I'm expecting a number from 1-10, can you do that for me {user.first_name}.")
-    return State.CHOOSE_RADARR
-
-
-def cancel(bot, update):
-    update.message.reply_text(constants.CONV_END, reply_markup=ReplyKeyboardRemove())
-
-    return ConversationHandler.END
-
 
 command = 'want'
 conversation = ConversationHandler(
@@ -110,13 +99,13 @@ conversation = ConversationHandler(
             MessageHandler(Filters.text, search_plex, pass_user_data=True),
         ],
         State.SEARCH_RADARR: [
-            RegexHandler(constants.YES_PATTERN, cancel),
+            RegexHandler(constants.YES_PATTERN, Cancel()),
             MessageHandler(Filters.text, search_radarr, pass_user_data=True),
         ],
         State.CHOOSE_RADARR: [
-            RegexHandler(constants.INT_PATTERN, target_choosen, pass_user_data=True),
-            MessageHandler(Filters.text, unknown_target),
+            RegexHandler(constants.INT_PATTERN, target_chosen, pass_user_data=True),
+            MessageHandler(Filters.text, UnknownTarget(State.CHOOSE_RADARR), pass_user_data=True),
         ]
     },
-    fallbacks=[CommandHandler('cancel', cancel)]
+    fallbacks=[CommandHandler('cancel', Cancel(), pass_user_data=True)]
 )

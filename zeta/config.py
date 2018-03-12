@@ -8,6 +8,7 @@ _NOT_SET = "NOT-SET"
 DEFAULT = {
     'token': (str, _NOT_SET),
     'allowed': (lambda x: set(map(int, x.split(','))), ''),
+    'admins': (lambda x: set(map(int, x.split(','))), ''),
     'plex_token': (str, _NOT_SET),
     'plex_baseurl': (str, _NOT_SET),
     'radarr_apikey': (str, _NOT_SET),

@@ -1,9 +1,9 @@
 import logging
 
 import requests
-from requests import request
 
 logger = logging.getLogger(__name__)
+
 
 class Client:
 
@@ -26,7 +26,7 @@ class Client:
         payload = {
             "title": movie['title'],
             "year": movie['year'],
-            "qualityProfileId": 6, # 6 = 1080 p / 720 p
+            "qualityProfileId": 6,  # 6 = 1080 p / 720 p
             "titleSlug": movie['titleSlug'],
             "tmdbId": movie['tmdbId'],
             "images": movie['images'],

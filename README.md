@@ -10,6 +10,8 @@ All by environment variables:
 export ZETA_TOKEN=
 # allowed chat ids comma separated
 export ZETA_ALLOWED=
+# chat ids for admin commands
+export ZETA_ADMINS=
 export ZETA_PLEX_TOKEN=
 # with port
 export ZETA_PLEX_BASEURL=

@@ -22,7 +22,6 @@ logging.basicConfig(level=logging.DEBUG,
 logger = logging.getLogger(__name__)
 
 
-
 ENTRY_KEYBOARD = ReplyKeyboardMarkup(
     [[f"/{want.command}"], [f"/{refresh.command}"]],
     one_time_keyboard=True,
@@ -31,6 +30,8 @@ ENTRY_KEYBOARD = ReplyKeyboardMarkup(
 
 def error(bot, update, error):
     logger.warning('Update "%s" caused error "%s"', update, error)
+    if update is not None and update.message.from_user.id in settings.admins:
+        update.message.reply_text(error)
 
 
 def how_can_i_help(bot, update):
