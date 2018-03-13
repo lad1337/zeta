@@ -22,6 +22,7 @@ class State(Enum):
     SEARCH_PLEX = 2
     SEARCH_RADARR = 3
     CHOOSE_RADARR = 4
+    SEARCH_OTHER = 5
 
 
 def start(bot, update):
@@ -34,7 +35,7 @@ def search_plex(bot, update, user_data):
     term = update.message.text
     user_data[State.SEARCH_RADARR] = term
     update.message.reply_text(
-        f"'{term}' sounds interesting {user.first_name}, let me take a look what we have on Plex.")
+        f"'{term}' sounds interesting {user.first_name}, let me take a look what we have.")
     movies = bot.plex.library.section('Movies')
     template = bot.j2_env.get_template('plex_movie_search_result.html')
     results = movies.search(term)
@@ -45,15 +46,21 @@ def search_plex(bot, update, user_data):
     update.message.reply_text(
         f"{msg}\nIs it here?",
         parse_mode=ParseMode.MARKDOWN,
-        reply_markup=ReplyKeyboardMarkup([['Yes', 'No']], one_time_keyboard=True),
+        reply_markup=constants.YES_NO_KEYBOARD,
     )
 
     return State.SEARCH_RADARR
 
 
 def search_radarr(bot, update, user_data):
-    update.message.reply_text(f"Lets look at on the interwebs.")
+    update.message.reply_text(f"Lets look around.")
     results = bot.radarr.search(user_data[State.SEARCH_RADARR])
+    if not results:
+        update.message.reply_text(
+            "Couldn't find anything, do you want to look for something else?",
+            reply_markup=constants.YES_NO_KEYBOARD,
+        )
+        return State.SEARCH_OTHER
     user_data[State.CHOOSE_RADARR] = results
 
     template = bot.j2_env.get_template('radarr_movie_search_result.html')
@@ -63,7 +70,10 @@ def search_radarr(bot, update, user_data):
         f"{msg}\n Which one?",
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=ReplyKeyboardMarkup(
-            [[i for i in map(str, range(1, RADARR_MAX_RESULTS + 1))]],
+            [
+                [i for i in map(str, range(1, min(RADARR_MAX_RESULTS + 1, len(results))))],
+                ['/cancel'],
+            ],
             one_time_keyboard=True,
         )
     )
@@ -90,7 +100,6 @@ def target_chosen(bot, update, user_data):
     return ConversationHandler.END
 
 
-
 command = 'want'
 conversation = ConversationHandler(
     entry_points=[CommandHandler(command, start)],
@@ -105,6 +114,11 @@ conversation = ConversationHandler(
         State.CHOOSE_RADARR: [
             RegexHandler(constants.INT_PATTERN, target_chosen, pass_user_data=True),
             MessageHandler(Filters.text, UnknownTarget(State.CHOOSE_RADARR), pass_user_data=True),
+        ],
+        State.SEARCH_OTHER: [
+            RegexHandler(constants.NO_PATTERN, Cancel(), pass_user_data=True),
+            RegexHandler(constants.YES_PATTERN, start),
+            MessageHandler(Filters.text, search_plex, pass_user_data=True),
         ]
     },
     fallbacks=[CommandHandler('cancel', Cancel(), pass_user_data=True)]

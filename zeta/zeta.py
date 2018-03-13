@@ -40,7 +40,7 @@ def how_can_i_help(bot, update):
 
 def check_user_permission(bot, update):
     if update.message.from_user.id not in settings.allowed:
-       raise DispatcherHandlerStop
+        raise DispatcherHandlerStop
 
 
 def main():
@@ -52,7 +52,6 @@ def main():
     bot.plex = PlexServer(settings.plex_baseurl, settings.plex_token)
     bot.radarr = RadarrClient(settings.radarr_baseurl, settings.radarr_apikey)
     bot.j2_env = Environment(loader=FileSystemLoader(settings.template_dir))
-
 
     # add all handlers
     dp = updater.dispatcher
