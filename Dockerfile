@@ -1,6 +1,6 @@
-FROM python:alpine as builder
+FROM python:3.6-alpine as builder
 
-RUN apk --update add --no-cache git
+RUN apk --update add --no-cache git build-base libffi-dev openssl-dev
 
 ARG whl=/tmp/wheelhouse
 WORKDIR /tmp
@@ -9,7 +9,7 @@ RUN pip wheel --wheel-dir=${whl} .
 
 FROM python:3.6-alpine
 ARG whl=/tmp/wheelhouse
-#RUN apk --update add --no-cache postgresql-libs
+
 COPY --from=builder ${whl} ${whl}
 RUN pip install --find-links ${whl} ${whl}/zeta-*.whl
 RUN rm -r ${whl}
