@@ -61,17 +61,18 @@ def search_radarr(bot, update, user_data):
             reply_markup=constants.YES_NO_KEYBOARD,
         )
         return State.SEARCH_OTHER
+    results = results[:RADARR_MAX_RESULTS]
     user_data[State.CHOOSE_RADARR] = results
 
     template = bot.j2_env.get_template('radarr_movie_search_result.html')
     user = update.message.from_user
-    msg = template.render(results=results[:RADARR_MAX_RESULTS], user=user)
+    msg = template.render(results=results, user=user)
     update.message.reply_text(
         f"{msg}\n Which one?",
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=ReplyKeyboardMarkup(
             [
-                [i for i in map(str, range(1, min(RADARR_MAX_RESULTS + 1, len(results))))],
+                [i for i in map(str, range(1, len(results) + 1))],
                 ['/cancel'],
             ],
             one_time_keyboard=True,
@@ -81,10 +82,13 @@ def search_radarr(bot, update, user_data):
 
 
 def target_chosen(bot, update, user_data):
+    user = update.message.from_user
     index = int(update.message.text)
-    if index > RADARR_MAX_RESULTS:
+    count = len(user_data[State.CHOOSE_RADARR])
+
+    if index > count:
         update.message.reply_text(
-            f"I'm expecting a number from 1-10, can you do that for me {user.first_name}.")
+            f"I'm expecting a number from 1-{count}, can you do that for me {user.first_name}.")
         return State.CHOOSE_RADARR
 
     update.message.reply_text("On it...")
