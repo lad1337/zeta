@@ -3,6 +3,7 @@ import logging
 from jinja2 import Environment
 from jinja2 import FileSystemLoader
 from plexapi.server import PlexServer
+from requests import Session
 from telegram.ext import Filters
 from telegram.ext import Updater
 from telegram.ext import DispatcherHandlerStop
@@ -49,7 +50,10 @@ def main():
     bot = updater.bot
     # add central connections we need to the bot
 
-    bot.plex = PlexServer(settings.plex_baseurl, settings.plex_token)
+
+    plex_session = Session()
+    plex_session.verify = False
+    bot.plex = PlexServer(settings.plex_baseurl, settings.plex_token, session=plex_session)
     bot.radarr = RadarrClient(settings.radarr_baseurl, settings.radarr_apikey)
     bot.j2_env = Environment(loader=FileSystemLoader(settings.template_dir))
 
